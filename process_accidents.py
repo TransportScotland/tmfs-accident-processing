@@ -12,19 +12,19 @@ def miles_to_km(val):
 
 
 def adjust_beta_factor(beta, year):
-    if year <= 2010:
-        return beta ** (year - 2000)
-    elif 2011 <= year <= 2020:
-        return (beta ** (2010 - 2000)
-                * ((1 + beta) / 2) ** (year - 2010))
+    if year <= 2020:
+        return beta ** (year - 2010)
     elif 2021 <= year <= 2030:
-        return (beta ** (2010 - 2000)
-                * ((1 + beta) / 2) ** (2020 - 2010)
-                * ((3 + beta) / 4) ** (year - 2020))
-    elif year > 2030:
-        return (beta ** (2010 - 2000)
-                * ((1 + beta) / 2) ** (2020 - 2010)
-                * ((3 + beta) / 4) ** (2030 - 2020))
+        return (beta ** (2020 - 2010)
+                * ((1 + beta) / 2) ** (year - 2020))
+    elif 2031 <= year <=2040:
+        return (beta ** (2020 - 2010)
+                * ((1 + beta) / 2) ** (2030 - 2020)
+                * ((3 + beta) / 4) ** (year - 2030))
+    elif year > 2040:
+        return (beta ** (2020 - 2010)
+                * ((1 + beta) / 2) ** (2030 - 2020)
+                * ((3 + beta) / 4) ** (2040 - 2030))
 
 
 class AccidentData:
@@ -82,9 +82,9 @@ class AccidentData:
                                 suffixes=('_CasRate', '_AccProp'), how='left')
 
         for acc_type in ('Fatal', 'Serious', 'Slight'):
-            # Casualty beta factors only apply up to 2010
+            # Casualty beta factors only apply up to 2020
             self.df[acc_type + '_CasBetaAdj'] = (
-                    self.df[acc_type + '_CasBeta'] ** min(self.year-2000, 10)
+                    self.df[acc_type + '_CasBeta'] ** min(self.year-2010, 10)
             )
             self.df[acc_type + ' Casualties'] = (
                     self.df['No. Accidents']
