@@ -24,7 +24,12 @@ logging.info(f'Process started by {getuser()}')
 logging.info(f'Network: {args.network_file}')
 logging.info(f'Rates Book: {args.rates_workbook}')
 logging.info(f'Year: {args.year}')
-
-ad = AccidentData(args.network_file, year=args.year)
-ad.get_accident_numbers(rates_workbook=args.rates_workbook)
-ad.export_totals(args.output_csv)
+logging.info('Calculating...')
+try:
+    ad = AccidentData(args.network_file, year=args.year)
+    ad.get_accident_numbers(rates_workbook=args.rates_workbook)
+    logging.info(f'Writing to {args.output_csv}')
+    ad.export_totals(args.output_csv)
+    logging.info('Processing completed')
+except Exception:
+    logging.exception('Error encountered in processing')
