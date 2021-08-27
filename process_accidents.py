@@ -42,6 +42,13 @@ class AccidentData:
 
         self.df = self.df[self.df['Accident Type'] > 0]
 
+        # Check if a region equivalence is provided - if not, set to 'All links'
+        if region_lookup := rates_dict.get('Region Equivalence'):
+            self.df = self.df.merge(region_lookup, how='left')
+            self.df['Region Name'] = self.df['Region Name'].fillna('UNKNOWN REGION')
+        else:
+            self.df['Region Name'] = 'All links'
+
         self.df['mvkm'] = self.df['DISTANCE'] * self.df['ANN_V'] / 1000000
 
         motorway = (self.df['Accident Type'].isin((1, 2, 3)))
@@ -99,15 +106,16 @@ class AccidentData:
 
     def export_totals(self, output_name):
         # print(self.df.columns)
-        totals = self.df.groupby('Road Type', as_index=False)\
-                     .agg({'{} {}'.format(at, mes): 'sum'
-                           for mes in ('Casualties', 'Accidents')
-                           for at in ('Fatal', 'Serious', 'Slight')})
+        totals = self.df.groupby(['Region Name', 'Road Type'], as_index=False)\
+                        .agg({'{} {}'.format(at, mes): 'sum'
+                             for mes in ('Casualties', 'Accidents')
+                             for at in ('Fatal', 'Serious', 'Slight')})
         # ].sum().to_frame(name='Total')
         
-        totals = totals[['Road Type'] + ['{} {}'.format(at, mes) for mes in ('Casualties', 'Accidents') for at in ('Fatal', 'Serious', 'Slight')]]
+        # Do we need this line?
+        totals = totals[['Region Name', 'Road Type'] + ['{} {}'.format(at, mes) for mes in ('Casualties', 'Accidents') for at in ('Fatal', 'Serious', 'Slight')]]
         
-        totals = totals.append(totals.sum(numeric_only=True), ignore_index=True)
+        totals = totals.append(totals.groupby('Region Name', as_index=False).sum(), ignore_index=True)
 
         totals['Road Type'] = totals['Road Type'].fillna('Total')
 
