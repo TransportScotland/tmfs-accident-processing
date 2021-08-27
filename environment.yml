@@ -1,0 +1,11 @@
+name: tmfs-accidents
+channels:
+  - conda-forge
+dependencies:
+  - pip=21.2.4=pyhd8ed1ab_0
+  - pyinstaller=4.5.1=py39h4dafc3f_0
+  - pyinstaller-hooks-contrib=2021.3=pyhd8ed1ab_0
+  - python=3.9.6=h7840368_1_cpython
+  - pip:
+    - numpy==1.21.2
+    - pandas==1.3.2
