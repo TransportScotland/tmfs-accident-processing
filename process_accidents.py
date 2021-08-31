@@ -43,7 +43,8 @@ class AccidentData:
         self.df = self.df[self.df['Accident Type'] > 0]
 
         # Check if a region equivalence is provided - if not, set to 'All links'
-        if region_lookup := rates_dict.get('Region Equivalence'):
+        region_lookup = rates_dict.get('Region Equivalence', pd.DataFrame())
+        if not region_lookup.empty:
             self.df = self.df.merge(region_lookup, on=['A', 'B'], how='left')
             self.df['Region Name'] = self.df['Region Name'].fillna('UNKNOWN REGION')
         else:
