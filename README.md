@@ -1,6 +1,9 @@
 # tmfs-accident-processing
 Python code for undertaking accident analysis on TMfS outputs
 
+## A note on approaches
+The approach set out in this process is designed to be broadly compatible with the COBALT accident processing methodology. This, notably, features some differences to the approach set out by NESA. Should a NESA-based approach be required, adjustments would need to be made to the processing scripts.
+
 ## Usage
 In many circumstances, the executable version of this application should be used - in particular, using this directly within Cube allows for accident analysis via `PILOT`, rather than the hassle of setting up a Python environment for use as a Custom User Program in Cube.
 
