@@ -35,7 +35,8 @@ class AccidentData:
 
     def get_accident_numbers(self, rates_workbook):
         rates_dict = pd.read_excel(rates_workbook, sheet_name=None, skiprows=1)
-        self.df = self.df.merge(rates_dict['Link Class Correspondence'],
+        self.df = self.df.merge(rates_dict['A9 links'], how='left')\
+                         .merge(rates_dict['Link Class Correspondence'],
                                 how='left', left_on='LINK_CLASS',
                                 right_on='TMfS Link Class')\
                          .fillna(0)
@@ -60,15 +61,24 @@ class AccidentData:
         self.df['Road Type'] = np.select([motorway, rural, urban],
                                          ['Motorway', 'Rural', 'Urban'])
 
-        self.df = self.df.merge(rates_dict['Accident Rates'], how='left')
+        self.df = self.df.merge(rates_dict['Local Rates Usage'], how='left')\
+                         .merge(rates_dict['Accident Rates'], how='left')
 
         self.df['Beta (adj)'] = self.df['Beta'].apply(
             adjust_beta_factor, year=self.year
+        )
+
+        # Single OR DUAL on the dualling section get the ASC modifier at present
+        factor_links = ((self.df['Indicator'] > 0)
+                        & (self.df['Dualling Section Flag'] == 1))
+        self.df['Factor to Apply'] = np.where(
+            factor_links, self.df['ASC Factor'], 1
         )
         self.df['No. Accidents'] = (
                 self.df['mvkm']
                 * self.df['Pia/mvkm']
                 * self.df['Beta (adj)']
+                * self.df['Factor to Apply']
         )
 
         self.df = self.df.merge(rates_dict['Casualty Rates'], how='left')\
